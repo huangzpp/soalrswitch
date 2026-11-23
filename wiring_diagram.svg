@@ -1,0 +1,345 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" width="100%" height="100%" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <defs>
+    <!-- 阴影滤镜 -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+    </filter>
+    <!-- 渐变色 -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="solarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="gridGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="relayGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="mcuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <!-- 箭头标记 -->
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#ef4444"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#10b981"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <!-- 标题栏 -->
+  <rect x="0" y="0" width="1200" height="60" fill="#1e293b"/>
+  <text x="30" y="38" fill="#f8fafc" font-size="22" font-weight="bold">太阳能 12V 路由器无缝自动切换供电系统 — 全电气接线与布局图</text>
+  <text x="960" y="38" fill="#94a3b8" font-size="14">v3.1 终极硬件闭环工程</text>
+
+  <!-- ════════════ 左侧：两路 12V 输入源 ════════════ -->
+
+  <!-- 太阳能电池组 -->
+  <g transform="translate(40, 90)" filter="url(#shadow)">
+    <rect width="180" height="150" rx="10" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="2"/>
+    <rect width="180" height="32" rx="10" fill="url(#solarGrad)"/>
+    <text x="90" y="22" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">☀️ 太阳能蓄电池组</text>
+    <text x="90" y="60" fill="#fcd34d" font-size="18" font-weight="bold" text-anchor="middle">12V 系统</text>
+    <text x="90" y="80" fill="#94a3b8" font-size="12" text-anchor="middle">(工作区间 10.5V~14.4V)</text>
+    <!-- 端子 -->
+    <circle cx="45" cy="115" r="12" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+    <text x="45" y="120" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">+</text>
+    <text x="45" y="140" fill="#fca5a5" font-size="11" text-anchor="middle">+12V</text>
+
+    <circle cx="135" cy="115" r="12" fill="#334155" stroke="#ffffff" stroke-width="2"/>
+    <text x="135" y="120" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">-</text>
+    <text x="135" y="140" fill="#cbd5e1" font-size="11" text-anchor="middle">GND</text>
+  </g>
+
+  <!-- 12V 市电电源适配器 -->
+  <g transform="translate(40, 270)" filter="url(#shadow)">
+    <rect width="180" height="140" rx="10" fill="url(#cardGrad)" stroke="#3b82f6" stroke-width="2"/>
+    <rect width="180" height="32" rx="10" fill="url(#gridGrad)"/>
+    <text x="90" y="22" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">🔌 12V 市电适配器</text>
+    <text x="90" y="60" fill="#60a5fa" font-size="17" font-weight="bold" text-anchor="middle">备用常备市电</text>
+    <text x="90" y="80" fill="#94a3b8" font-size="12" text-anchor="middle">(恒定 12.0V 2A~3A)</text>
+    <!-- 端子 -->
+    <circle cx="45" cy="110" r="12" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+    <text x="45" y="115" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">+</text>
+    <text x="45" y="132" fill="#fca5a5" font-size="11" text-anchor="middle">+12V</text>
+
+    <circle cx="135" cy="110" r="12" fill="#334155" stroke="#ffffff" stroke-width="2"/>
+    <text x="135" y="115" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">-</text>
+    <text x="135" y="132" fill="#cbd5e1" font-size="11" text-anchor="middle">GND</text>
+  </g>
+
+  <!-- ════════════ 中间偏上：车载点烟器降压 + AMS1117 (超低功耗稳压) ════════════ -->
+
+  <!-- 车载 12V 降压模块 -->
+  <g transform="translate(290, 90)" filter="url(#shadow)">
+    <rect width="210" height="130" rx="10" fill="url(#cardGrad)" stroke="#10b981" stroke-width="2"/>
+    <rect width="210" height="30" rx="10" fill="url(#relayGrad)"/>
+    <text x="105" y="20" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">🚗 车载点烟器快充降压模块</text>
+    <text x="105" y="55" fill="#34d399" font-size="14" font-weight="bold" text-anchor="middle">实测空载静态仅 0.02W !</text>
+    <text x="105" y="75" fill="#94a3b8" font-size="11" text-anchor="middle">高效 DCDC 开关降压 (9~30V 宽压)</text>
+    <!-- 输入输出引脚 -->
+    <rect x="15" y="90" width="55" height="25" rx="4" fill="#334155"/>
+    <text x="42" y="107" fill="#f8fafc" font-size="11" text-anchor="middle">12V 输入</text>
+    <rect x="140" y="90" width="55" height="25" rx="4" fill="#047857"/>
+    <text x="167" y="107" fill="#f8fafc" font-size="11" text-anchor="middle">5V 输出</text>
+  </g>
+
+  <!-- AMS1117-3.3V 稳压小板 -->
+  <g transform="translate(560, 90)" filter="url(#shadow)">
+    <rect width="160" height="130" rx="10" fill="url(#cardGrad)" stroke="#6366f1" stroke-width="2"/>
+    <rect width="160" height="30" rx="10" fill="url(#mcuGrad)"/>
+    <text x="80" y="20" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">⚡ AMS1117-3.3V</text>
+    <text x="80" y="55" fill="#a5b4fc" font-size="13" font-weight="bold" text-anchor="middle">5V 转 3.3V 线性稳压</text>
+    <text x="80" y="75" fill="#94a3b8" font-size="11" text-anchor="middle">压差仅 1.7V, 极微发热</text>
+    <!-- 引脚 -->
+    <rect x="15" y="92" width="38" height="22" rx="4" fill="#334155"/>
+    <text x="34" y="107" fill="#f8fafc" font-size="10" text-anchor="middle">5V In</text>
+    <rect x="61" y="92" width="38" height="22" rx="4" fill="#1e293b"/>
+    <text x="80" y="107" fill="#cbd5e1" font-size="10" text-anchor="middle">GND</text>
+    <rect x="107" y="92" width="40" height="22" rx="4" fill="#4338ca"/>
+    <text x="127" y="107" fill="#f8fafc" font-size="10" font-weight="bold" text-anchor="middle">3.3V</text>
+  </g>
+
+  <!-- ════════════ 中间：分压采样网络 ════════════ -->
+  <g transform="translate(290, 260)" filter="url(#shadow)">
+    <rect width="430" height="150" rx="10" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <text x="20" y="28" fill="#fcd34d" font-size="14" font-weight="bold">🎯 蓄电池电压精准分压采样网络 (紧贴 STC8 焊接)</text>
+    
+    <!-- 电阻 R1 150k -->
+    <rect x="40" y="55" width="80" height="30" rx="4" fill="#1e293b" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="80" y="75" fill="#fcd34d" font-size="12" font-weight="bold" text-anchor="middle">R1: 150kΩ 1%</text>
+
+    <!-- 分压中点圆点 -->
+    <circle cx="160" cy="70" r="6" fill="#38bdf8"/>
+    <text x="160" y="55" fill="#38bdf8" font-size="11" text-anchor="middle">分压中点 (k=6.556)</text>
+
+    <!-- 限流电阻 R3 1k -->
+    <rect x="220" y="55" width="70" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="255" y="75" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">R3: 1kΩ</text>
+    <text x="350" y="75" fill="#a5b4fc" font-size="12" font-weight="bold">──> 接 STC8 Pin 7 (P3.2)</text>
+
+    <!-- 下分压电阻 R2 27k 与滤波电容 C1 104 -->
+    <rect x="120" y="105" width="80" height="28" rx="4" fill="#1e293b" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="160" y="123" fill="#fcd34d" font-size="11" font-weight="bold" text-anchor="middle">R2: 27kΩ 1%</text>
+
+    <rect x="220" y="105" width="80" height="28" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="260" y="123" fill="#10b981" font-size="11" font-weight="bold" text-anchor="middle">C1: 0.1µF (104)</text>
+
+    <!-- GND 连接点 -->
+    <line x1="160" y1="70" x2="160" y2="105" stroke="#38bdf8" stroke-width="2"/>
+    <line x1="200" y1="119" x2="220" y2="119" stroke="#38bdf8" stroke-width="2"/>
+    <text x="320" y="123" fill="#cbd5e1" font-size="12">──> 接系统公共 GND</text>
+  </g>
+
+  <!-- ════════════ 下方核心板：洞洞板主控区 (STC8 + ESP-01S) ════════════ -->
+  <g transform="translate(40, 450)" filter="url(#shadow)">
+    <!-- 洞洞板衬底 -->
+    <rect width="680" height="360" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+    <text x="25" y="32" fill="#f8fafc" font-size="16" font-weight="bold">🛠️ 洞洞板核心控制与采集区 (万用板焊接底板)</text>
+
+    <!-- STC8G1K08A SOP8 模块 -->
+    <g transform="translate(30, 60)">
+      <rect width="280" height="270" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="2"/>
+      <rect width="280" height="28" rx="8" fill="#4338ca"/>
+      <text x="140" y="19" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">STC8G1K08A-8PIN (10位ADC采集)</text>
+
+      <!-- 芯片主体 (SOP8) -->
+      <rect x="80" y="55" width="120" height="170" rx="6" fill="#18181b" stroke="#71717a" stroke-width="1.5"/>
+      <circle cx="100" cy="70" r="5" fill="#3f3f46"/> <!-- 凹坑标识 -->
+      <text x="140" y="145" fill="#a1a1aa" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(-90 140 145)">STC8G1K08A</text>
+
+      <!-- 8 个引脚标注 (标准逆时针) -->
+      <!-- Pin 1 -->
+      <rect x="35" y="65" width="45" height="18" rx="3" fill="#334155"/>
+      <text x="57" y="78" fill="#f8fafc" font-size="10" text-anchor="middle">1: P5.4/RST</text>
+      <!-- Pin 2 -->
+      <rect x="35" y="105" width="45" height="18" rx="3" fill="#dc2626"/>
+      <text x="57" y="118" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">2: VCC (3V3)</text>
+      <!-- Pin 3 -->
+      <rect x="35" y="145" width="45" height="18" rx="3" fill="#27272a"/>
+      <text x="57" y="158" fill="#71717a" font-size="10" text-anchor="middle">3: P5.5 悬空</text>
+      <!-- Pin 4 -->
+      <rect x="35" y="185" width="45" height="18" rx="3" fill="#0284c7"/>
+      <text x="57" y="198" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">4: GND</text>
+
+      <!-- Pin 5 -->
+      <rect x="200" y="185" width="55" height="18" rx="3" fill="#0d9488"/>
+      <text x="227" y="198" fill="#ffffff" font-size="10" text-anchor="middle">5: P3.0 (RxD)</text>
+      <!-- Pin 6 -->
+      <rect x="200" y="145" width="55" height="18" rx="3" fill="#0d9488"/>
+      <text x="227" y="158" fill="#ffffff" font-size="10" text-anchor="middle">6: P3.1 (TxD)</text>
+      <!-- Pin 7 -->
+      <rect x="200" y="105" width="55" height="18" rx="3" fill="#d97706"/>
+      <text x="227" y="118" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">7: P3.2(ADC2)</text>
+      <!-- Pin 8 -->
+      <rect x="200" y="65" width="55" height="18" rx="3" fill="#27272a"/>
+      <text x="227" y="78" fill="#71717a" font-size="10" text-anchor="middle">8: P3.3 备用</text>
+
+      <text x="140" y="250" fill="#94a3b8" font-size="11" text-anchor="middle">固件 v1.3.1 (9600 8N1 / Timer1)</text>
+    </g>
+
+    <!-- ESP-01S (ESP8285) 模块 -->
+    <g transform="translate(360, 60)">
+      <rect width="290" height="270" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="2"/>
+      <rect width="290" height="28" rx="8" fill="#1d4ed8"/>
+      <text x="145" y="19" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">ESP-01S (ESPHome 核心主控)</text>
+
+      <!-- 模块图 -->
+      <rect x="80" y="50" width="130" height="180" rx="6" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1.5"/>
+      <rect x="100" y="60" width="90" height="50" rx="4" fill="#0f172a"/> <!-- 天线区 -->
+      <path d="M 110 70 L 120 70 L 120 95 L 130 95 L 130 70 L 140 70 L 140 95 L 150 95 L 150 70 L 160 70 L 160 95 L 170 95 L 170 70 L 180 70" fill="none" stroke="#fcd34d" stroke-width="2"/>
+
+      <!-- 2x4 双排插针引脚 -->
+      <!-- 左列 -->
+      <circle cx="95" cy="140" r="7" fill="#334155"/><text x="95" y="144" fill="#fff" font-size="8" text-anchor="middle">GND</text>
+      <circle cx="95" cy="165" r="7" fill="#0d9488"/><text x="95" y="169" fill="#fff" font-size="8" text-anchor="middle">TX</text>
+      <circle cx="95" cy="190" r="7" fill="#eab308"/><text x="95" y="194" fill="#000" font-size="8" text-anchor="middle">IO2</text>
+      <circle cx="95" cy="215" r="7" fill="#dc2626"/><text x="95" y="219" fill="#fff" font-size="8" text-anchor="middle">EN</text>
+
+      <!-- 右列 -->
+      <circle cx="195" cy="140" r="7" fill="#10b981"/><text x="195" y="144" fill="#fff" font-size="8" font-weight="bold" text-anchor="middle">IO0</text>
+      <circle cx="195" cy="165" r="7" fill="#dc2626"/><text x="195" y="169" fill="#fff" font-size="8" text-anchor="middle">RST</text>
+      <circle cx="195" cy="190" r="7" fill="#0d9488"/><text x="195" y="194" fill="#fff" font-size="8" text-anchor="middle">RX</text>
+      <circle cx="195" cy="215" r="7" fill="#dc2626"/><text x="195" y="219" fill="#fff" font-size="8" text-anchor="middle">3V3</text>
+
+      <!-- 引脚功能引出说明 -->
+      <text x="215" y="144" fill="#34d399" font-size="11" font-weight="bold">──> 控继电器 (IN)</text>
+      <text x="215" y="194" fill="#2dd4bf" font-size="11">──> 接 STC8 TXD (Pin 6)</text>
+      <text x="45" y="169" fill="#2dd4bf" font-size="11" text-anchor="end">接 STC8 RXD (Pin 5) &lt;──</text>
+      <text x="45" y="194" fill="#facc15" font-size="11" text-anchor="end">经10k接 RST(Pin 1) &lt;──</text>
+
+      <text x="145" y="250" fill="#94a3b8" font-size="11" text-anchor="middle">IP: 192.168.2.107 (OTA / HA)</text>
+    </g>
+  </g>
+
+  <!-- ════════════ 右侧：3.3V 继电器模块 + 超级电容组 + 路由器 ════════════ -->
+
+  <!-- 3.3V 带光耦继电器模块 -->
+  <g transform="translate(800, 90)" filter="url(#shadow)">
+    <rect width="360" height="280" rx="10" fill="url(#cardGrad)" stroke="#10b981" stroke-width="2"/>
+    <rect width="360" height="32" rx="10" fill="url(#relayGrad)"/>
+    <text x="180" y="22" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">🔄 3.3V 带光耦隔离继电器模块 (切换核心)</text>
+
+    <!-- 低压控制端 (左侧输入) -->
+    <rect x="20" y="60" width="85" height="100" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+    <text x="62" y="80" fill="#94a3b8" font-size="11" text-anchor="middle">控制排针</text>
+    <circle cx="40" cy="100" r="6" fill="#dc2626"/><text x="55" y="104" fill="#fca5a5" font-size="11">VCC (3.3V)</text>
+    <circle cx="40" cy="120" r="6" fill="#38bdf8"/><text x="55" y="124" fill="#bae6fd" font-size="11">GND (地)</text>
+    <circle cx="40" cy="140" r="6" fill="#10b981"/><text x="55" y="144" fill="#86efac" font-size="11" font-weight="bold">IN (控端)</text>
+
+    <!-- 继电器蓝色方块 -->
+    <rect x="135" y="60" width="100" height="110" rx="6" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="185" y="105" fill="#ffffff" font-size="14" font-weight="bold" text-anchor="middle">10A 250VAC</text>
+    <text x="185" y="125" fill="#93c5fd" font-size="13" font-weight="bold" text-anchor="middle">SRD-3VDC</text>
+
+    <!-- 高压接线端子 (右侧端子台) -->
+    <rect x="260" y="55" width="85" height="130" rx="6" fill="#047857" stroke="#34d399" stroke-width="1.5"/>
+    <text x="302" y="78" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">端子台</text>
+
+    <!-- NC (常闭) -->
+    <circle cx="280" cy="98" r="8" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+    <text x="295" y="102" fill="#fcd34d" font-size="11" font-weight="bold">NC (常闭)</text>
+    <text x="302" y="115" fill="#fde68a" font-size="9" text-anchor="middle">接太阳能 12V</text>
+
+    <!-- COM (公共端) -->
+    <circle cx="280" cy="130" r="8" fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
+    <text x="295" y="134" fill="#fca5a5" font-size="11" font-weight="bold">COM (公共)</text>
+    <text x="302" y="147" fill="#fecaca" font-size="9" text-anchor="middle">输出至路由器</text>
+
+    <!-- NO (常开) -->
+    <circle cx="280" cy="162" r="8" fill="#3b82f6" stroke="#fff" stroke-width="1.5"/>
+    <text x="295" y="166" fill="#93c5fd" font-size="11" font-weight="bold">NO (常开)</text>
+    <text x="302" y="179" fill="#bfdbfe" font-size="9" text-anchor="middle">接市电 12V</text>
+
+    <rect x="20" y="195" width="320" height="70" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <text x="180" y="215" fill="#34d399" font-size="12" font-weight="bold" text-anchor="middle">💡 极省电安全运行逻辑：</text>
+    <text x="35" y="235" fill="#cbd5e1" font-size="11">• 正常状态：继电器释放 (0功耗)，COM 走 NC 连太阳能</text>
+    <text x="35" y="252" fill="#cbd5e1" font-size="11">• 欠压 &lt;11.0V：ESP-01S 拉低 IN 吸合，COM 走 NO 切市电</text>
+  </g>
+
+  <!-- 超级电容组 + 路由器负载 -->
+  <g transform="translate(800, 410)" filter="url(#shadow)">
+    <rect width="360" height="400" rx="10" fill="url(#cardGrad)" stroke="#38bdf8" stroke-width="2"/>
+    <rect width="360" height="32" rx="10" fill="#0284c7"/>
+    <text x="180" y="22" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">🚀 超级电容无缝缓冲与 12V 路由器</text>
+
+    <!-- 超级电容组示意图 -->
+    <g transform="translate(25, 55)">
+      <rect width="310" height="150" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="155" y="25" fill="#38bdf8" font-size="13" font-weight="bold" text-anchor="middle">🔋 路由器端超级电容组 (断电支撑 30 秒)</text>
+
+      <!-- 6 个电容圆柱 -->
+      <g transform="translate(20, 45)">
+        <rect x="0" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="17" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP1</text>
+        <rect x="45" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="62" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP2</text>
+        <rect x="90" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="107" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP3</text>
+        <rect x="135" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="152" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP4</text>
+        <rect x="180" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="197" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP5</text>
+        <rect x="225" y="0" width="35" height="65" rx="5" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+        <text x="242" y="38" fill="#fff" font-size="9" text-anchor="middle">CAP6</text>
+      </g>
+      <text x="155" y="135" fill="#7dd3fc" font-size="11" text-anchor="middle">并联在继电器 COM 输出与 GND 之间，跨越毫秒级切换</text>
+    </g>
+
+    <!-- 最终目标：12V 路由器 -->
+    <g transform="translate(25, 230)">
+      <rect width="310" height="145" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+      <text x="155" y="28" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">🌐 12V 路由器负载 (目标设备)</text>
+      <text x="155" y="55" fill="#34d399" font-size="13" font-weight="bold" text-anchor="middle">永不断电、无缝运行！</text>
+
+      <!-- DC 5.5x2.1 插头 -->
+      <g transform="translate(60, 75)">
+        <rect x="0" y="5" width="50" height="25" rx="4" fill="#334155" stroke="#94a3b8" stroke-width="1"/>
+        <rect x="50" y="10" width="35" height="15" fill="#cbd5e1"/>
+        <rect x="85" y="14" width="20" height="7" fill="#e2e8f0"/>
+        <text x="95" y="45" fill="#f8fafc" font-size="11" text-anchor="middle">DC 12V 插头</text>
+      </g>
+      <text x="195" y="95" fill="#ef4444" font-size="11" font-weight="bold">内正 (+) ── 连 COM 端</text>
+      <text x="195" y="115" fill="#38bdf8" font-size="11" font-weight="bold">外负 (-) ── 连公共 GND</text>
+    </g>
+  </g>
+
+  <!-- ════════════ 跨模块彩色连线 (走线) ════════════ -->
+
+  <!-- 1. 太阳能 12V+ 走线到车载降压模块与继电器 NC -->
+  <!-- 太阳能+ 到 车载降压 In -->
+  <path d="M 85 205 L 85 230 L 250 230 L 250 180 L 305 180" fill="none" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+  <!-- 太阳能+ 到 分压电阻 R1 -->
+  <path d="M 85 230 L 85 315 L 330 315" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <!-- 太阳能+ 到 继电器 NC (主供电通道) -->
+  <path d="M 85 230 L 85 70 L 1080 70 L 1080 188" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- 2. 市电 12V+ 走线到继电器 NO -->
+  <path d="M 85 380 L 85 435 L 750 435 L 750 252 L 1080 252" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 3. 继电器 COM 输出到超级电容与路由器 -->
+  <path d="M 1080 220 L 1110 220 L 1110 465 L 1080 465" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+
+  <!-- 4. 车载降压 5V 输出 到 AMS1117 5V In -->
+  <path d="M 475 180 L 575 180" fill="none" stroke="#10b981" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <!-- 5. AMS1117 3.3V 输出给各模块 -->
+  <path d="M 687 180 L 710 180 L 710 380 L 630 380 L 630 555 L 575 555" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="3,3"/>
+
+  <!-- 6. ESP-01S GPIO0 控制继电器 IN -->
+  <path d="M 605 590 L 760 590 L 760 230 L 840 230" fill="none" stroke="#34d399" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+</svg>

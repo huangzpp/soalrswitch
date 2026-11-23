@@ -1,0 +1,463 @@
+# ═══════════════════════════════════════════════════════════
+#  8285.yaml  —  ESP-01S (ESP8285) + STC8G1K08A 外置 ADC
+#  太阳能 12V 路由器无缝自动切换供电系统 (v3.3 动态阈值版)
+#
+#  硬件连线:
+#    STC8 TX (Pin 6) -> ESP-01S RX (GPIO3)
+#    STC8 RX (Pin 5) -> ESP-01S TX (GPIO1)
+#    STC8 P5.4 RST (Pin 1) <- 10k <- ESP-01S GPIO2
+#    3.3V 继电器 IN <- ESP-01S GPIO0 (低电平触发吸合切市电)
+#    太阳能 12V 采样 <- 150k:27k 分压 <- STC8 P3.3 / ADC1 (Pin 8)
+#    STC8 P3.2 (Pin 7) 悬空
+# ═══════════════════════════════════════════════════════════
+
+esphome:
+  name: "8285"
+  friendly_name: "8285"
+
+esp8266:
+  board: esp01_1m
+
+# logger 禁用串口日志，释放 UART0 (GPIO1/GPIO3) 供 STC8 双向通信
+logger:
+  baud_rate: 0
+  level: DEBUG
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: 8285 Fallback Hotspot
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+
+# ─── UART0: 与 STC8G 全双工通信 ───
+uart:
+  id: uart_stc8
+  rx_pin: GPIO3   # ESP-01S RX
+  tx_pin: GPIO1   # ESP-01S TX
+  baud_rate: 9600
+
+# ─── 动态可调电压阈值 (可在 Web / HA 自由调节滑块) ───
+number:
+  # 1. 切市电保护电压阈值 (9.0V ~ 12.0V)
+  - platform: template
+    name: "切市电电压阈值"
+    id: volt_threshold_grid
+    optimistic: true
+    min_value: 9.0
+    max_value: 12.0
+    step: 0.1
+    initial_value: 10.8
+    restore_value: true
+    unit_of_measurement: "V"
+    mode: slider
+    icon: "mdi:battery-alert"
+    set_action:
+      - lambda: |-
+          id(volt_threshold_grid).publish_state(x);
+
+  # 2. 切太阳能回充电压阈值 (11.0V ~ 13.5V)
+  - platform: template
+    name: "切太阳能电压阈值"
+    id: volt_threshold_solar
+    optimistic: true
+    min_value: 11.0
+    max_value: 13.5
+    step: 0.1
+    initial_value: 12.3
+    restore_value: true
+    unit_of_measurement: "V"
+    mode: slider
+    icon: "mdi:solar-power"
+    set_action:
+      - lambda: |-
+          id(volt_threshold_solar).publish_state(x);
+
+  # 3. 采样分压校准系数 (万用表实测 12.12V 标定: 6.151)
+  - platform: template
+    name: "采样分压校准系数 (Cal)"
+    id: volt_cal_factor
+    optimistic: true
+    min_value: 5.000
+    max_value: 7.500
+    step: 0.001
+    initial_value: 6.151
+    restore_value: true
+    unit_of_measurement: ""
+    mode: box
+    icon: "mdi:tune"
+    set_action:
+      - lambda: |-
+          id(volt_cal_factor).publish_state(x);
+          if (id(stc8_v1).has_state()) {
+            id(solar_battery_voltage).publish_state((id(stc8_v1).state / 1000.0f) * x);
+          }
+
+# ─── 继电器控制与自动切换开关 ───
+switch:
+  # 1. 继电器物理输出 (GPIO0, 低电平有效)
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true  # LOW 吸合 (切市电), HIGH 释放 (连太阳能)
+    name: "市电供电切换 (继电器)"
+    id: relay_grid_power
+    restore_mode: RESTORE_DEFAULT_OFF  # 默认关闭 (保持太阳能常闭 NC 0功耗)
+    icon: "mdi:power-plug"
+
+  # 2. 自动切换使能总开关 (可在 Web/HA 自由切换自动/手动模式)
+  - platform: template
+    name: "自动切换使能"
+    id: auto_switch_enabled
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    icon: "mdi:robot"
+    turn_on_action:
+      - lambda: |-
+          id(auto_switch_enabled).publish_state(true);
+    turn_off_action:
+      - lambda: |-
+          id(auto_switch_enabled).publish_state(false);
+
+# ─── 传感器列表 ───
+sensor:
+  # 1. 太阳能蓄电池真实电压 (基于 P3.3 / ADC1 精密分压反算，由 stc8_v1 滤波后联动输出)
+  - platform: template
+    name: "太阳能蓄电池电压"
+    id: solar_battery_voltage
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    device_class: voltage
+    state_class: measurement
+    icon: "mdi:solar-power"
+    update_interval: never
+
+  # 2. P3.2 Raw 原始值 (悬空/接地)
+  - platform: template
+    name: "STC8 ADC P3.2 (Raw)"
+    id: stc8_adc0
+    unit_of_measurement: ""
+    accuracy_decimals: 0
+    state_class: measurement
+    icon: "mdi:sine-wave"
+
+  # 3. P3.3 Raw 原始值 (12V 采样，0~1023)
+  - platform: template
+    name: "STC8 ADC P3.3 (Raw)"
+    id: stc8_adc1
+    unit_of_measurement: ""
+    accuracy_decimals: 0
+    state_class: measurement
+    icon: "mdi:sine-wave"
+    filters:
+      - median:
+          window_size: 5
+          send_every: 1
+          send_first_at: 1
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+  # 4. STC8 内部反算的真实供电 VCC (mV)
+  - platform: template
+    name: "STC8 VCC 供电"
+    id: stc8_vcc
+    unit_of_measurement: "mV"
+    accuracy_decimals: 0
+    state_class: measurement
+    icon: "mdi:flash"
+
+  # 5. P3.2 引脚测量电压 (mV, 悬空)
+  - platform: template
+    name: "STC8 P3.2 电压"
+    id: stc8_v0
+    unit_of_measurement: "mV"
+    accuracy_decimals: 0
+    state_class: measurement
+    device_class: voltage
+    icon: "mdi:lightning-bolt"
+
+  # 6. P3.3 引脚分压测量电压 (mV, ~1856mV @ 12.1V)
+  - platform: template
+    name: "STC8 P3.3 电压"
+    id: stc8_v1
+    unit_of_measurement: "mV"
+    accuracy_decimals: 0
+    state_class: measurement
+    device_class: voltage
+    icon: "mdi:lightning-bolt"
+    filters:
+      - median:
+          window_size: 5
+          send_every: 1
+          send_first_at: 1
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+    on_value:
+      - lambda: |-
+          float cal = (id(volt_cal_factor).state > 0.0f) ? id(volt_cal_factor).state : 6.151f;
+          id(solar_battery_voltage).publish_state((x / 1000.0f) * cal);
+
+  # 7. 通信丢帧统计
+  - platform: template
+    name: "STC8 丢帧计数"
+    id: stc8_drop_count
+    unit_of_measurement: "帧"
+    accuracy_decimals: 0
+    state_class: total_increasing
+    icon: "mdi:counter"
+
+  # 8. 芯片健康状态码
+  - platform: template
+    name: "STC8 状态码"
+    id: stc8_stat
+    accuracy_decimals: 0
+    icon: "mdi:alert-circle-check"
+
+  # 9. ESP 自身内部供电检测
+  - platform: adc
+    pin: VCC
+    name: "ESP 供电电压"
+    id: esp_vcc
+    filters:
+      - multiply: 0.95504
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    icon: "mdi:battery-charging"
+
+# ─── 二值传感器 ───
+binary_sensor:
+  - platform: template
+    name: "STC8 在线状态"
+    id: stc8_online
+    device_class: connectivity
+    icon: "mdi:check-network"
+
+# ─── 文本传感器 ───
+text_sensor:
+  # 1. 固件版本
+  - platform: template
+    name: "STC8 固件版本"
+    id: stc8_fw_ver
+    icon: "mdi:chip"
+
+  # 2. 当前路由器供电来源指示
+  - platform: template
+    name: "路由器当前供电来源"
+    id: current_power_source
+    icon: "mdi:transmission-tower"
+    lambda: |-
+      if (id(relay_grid_power).state) {
+        return std::string("12V 市电适配器");
+      } else {
+        return std::string("太阳能蓄电池");
+      }
+
+# ─── 双向控制按键 ───
+button:
+  # 远程触发 STC8 硬件复位 (通过 GPIO2 拉低 Pin 1 P5.4)
+  - platform: template
+    name: "STC8 硬件复位 (GPIO2)"
+    icon: "mdi:restart-alert"
+    on_press:
+      then:
+        - lambda: |-
+            pinMode(2, OUTPUT);
+            digitalWrite(2, LOW);
+        - delay: 100ms
+        - lambda: |-
+            digitalWrite(2, HIGH);
+            pinMode(2, INPUT);
+
+  # 远程触发 STC8 软复位进 ISP 模式 (免拆机烧录)
+  - platform: template
+    name: "STC8 进入 ISP 下载模式"
+    icon: "mdi:download"
+    on_press:
+      then:
+        - lambda: |-
+            id(uart_stc8).write_str("$$ISP#");
+
+  # 远程软重启 STC8
+  - platform: template
+    name: "STC8 软件重启"
+    icon: "mdi:restart"
+    on_press:
+      then:
+        - lambda: |-
+            id(uart_stc8).write_str("$$RST#");
+
+  # 在线 Ping 测试
+  - platform: template
+    name: "STC8 通信 Ping"
+    icon: "mdi:swap-horizontal"
+    on_press:
+      then:
+        - lambda: |-
+            id(uart_stc8).write_str("$$PING#");
+
+# ─── 全局状态变量 ───
+globals:
+  - id: uart_rx_line
+    type: std::string
+    restore_value: false
+    initial_value: '""'
+  - id: last_seq
+    type: int
+    restore_value: false
+    initial_value: "-1"
+  - id: total_drops
+    type: int
+    restore_value: false
+    initial_value: "0"
+  - id: last_frame_time
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: low_volt_count
+    type: int
+    restore_value: false
+    initial_value: "0"
+  - id: high_volt_count
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+# ─── 高频定时与控制引擎 ───
+interval:
+  # 1. 串口高频抓取与行解析器 (每 20ms)
+  - interval: 20ms
+    then:
+      - lambda: |-
+          while (id(uart_stc8).available()) {
+            uint8_t c;
+            id(uart_stc8).read_byte(&c);
+            if (c == '\n') {
+              std::string &line = id(uart_rx_line);
+              while (!line.empty() && (line.back() == '\r' || line.back() == ' ')) line.pop_back();
+
+              if (!line.empty()) {
+                // 1. 抓取开机横幅: "#STC8G FW:1.3.1 ...#"
+                if (line.rfind("#STC8G", 0) == 0) {
+                  auto p_ver = line.find("FW:");
+                  if (p_ver != std::string::npos) {
+                    auto p_end = line.find(" ", p_ver);
+                    id(stc8_fw_ver).publish_state(line.substr(p_ver + 3, p_end - p_ver - 3));
+                  }
+                }
+                // 2. 正常数据帧解析: "ADC0:xxxx,ADC1:yyyy,VCC:zzzz,V0:a,V1:b,SEQ:s,STAT:m"
+                else if (line.find("ADC0:") != std::string::npos) {
+                  id(last_frame_time) = millis();
+                  id(stc8_online).publish_state(true);
+
+                  auto extract_val = [&](const std::string &key) -> int {
+                    auto pos = line.find(key);
+                    if (pos == std::string::npos) return -1;
+                    size_t start = pos + key.length();
+                    size_t end = line.find(",", start);
+                    if (end == std::string::npos) end = line.length();
+                    return atoi(line.substr(start, end - start).c_str());
+                  };
+
+                  int adc0 = extract_val("ADC0:");
+                  int adc1 = extract_val("ADC1:");
+                  int vcc  = extract_val("VCC:");
+                  int v0   = extract_val("V0:");
+                  int v1   = extract_val("V1:");
+                  int seq  = extract_val("SEQ:");
+                  int stat = extract_val("STAT:");
+
+                  if (adc0 >= 0) id(stc8_adc0).publish_state(adc0);
+                  if (adc1 >= 0) id(stc8_adc1).publish_state(adc1);
+                  if (vcc > 0)   id(stc8_vcc).publish_state(vcc);
+                  if (v0 >= 0)   id(stc8_v0).publish_state(v0);
+                  if (v1 >= 0) id(stc8_v1).publish_state(v1);
+                  if (stat >= 0) id(stc8_stat).publish_state(stat);
+
+                  // 丢帧统计
+                  if (seq >= 0) {
+                    if (id(last_seq) >= 0) {
+                      int expected = (id(last_seq) + 1) & 0xFF;
+                      if (seq != expected) {
+                        int diff = (seq - expected) & 0xFF;
+                        id(total_drops) += diff;
+                        id(stc8_drop_count).publish_state(id(total_drops));
+                      }
+                    }
+                    id(last_seq) = seq;
+                  }
+                }
+              }
+              line.clear();
+            } else if (c != '\r') {
+              id(uart_rx_line) += (char)c;
+              if (id(uart_rx_line).size() > 128) id(uart_rx_line).clear();
+            }
+          }
+
+  # 2. 心跳离线超时检测 (超过 3 秒没收到数据帧标记为离线)
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (millis() - id(last_frame_time) > 3000) {
+            id(stc8_online).publish_state(false);
+          }
+
+  # 3. 施密特双阈值迟滞自动切换控制器 (每 2 秒检测一次，支持滑块动态调节)
+  - interval: 2s
+    then:
+      - lambda: |-
+          if (!id(auto_switch_enabled).state) {
+            id(low_volt_count) = 0;
+            id(high_volt_count) = 0;
+            return;
+          }
+          if (!id(solar_battery_voltage).has_state()) return;
+
+          float vbat = id(solar_battery_voltage).state;
+          float low_thresh = id(volt_threshold_grid).state;
+          float high_thresh = id(volt_threshold_solar).state;
+
+          // ── 状态 A: 当前为太阳能供电 (继电器未吸合，处于常闭 NC) ──
+          if (!id(relay_grid_power).state) {
+            id(high_volt_count) = 0;
+            if (vbat <= low_thresh) {
+              id(low_volt_count)++;
+              // 连续 3 次检测 (约 6 秒) 低于设定阈值，切市电！
+              if (id(low_volt_count) >= 3) {
+                ESP_LOGW("POWER", "太阳能电池欠压 (%.2fV <= %.2fV)，吸合继电器切换至市电适配器！", vbat, low_thresh);
+                id(relay_grid_power).turn_on();
+                id(low_volt_count) = 0;
+              }
+            } else {
+              id(low_volt_count) = 0;
+            }
+          }
+          // ── 状态 B: 当前为市电供电 (继电器已吸合，处于常开 NO) ──
+          else {
+            id(low_volt_count) = 0;
+            if (vbat >= high_thresh) {
+              id(high_volt_count)++;
+              // 连续 5 次检测 (约 10 秒) 稳定在设定回充阈值以上，切回太阳能！
+              if (id(high_volt_count) >= 5) {
+                ESP_LOGI("POWER", "太阳能电池已充至目标电压 (%.2fV >= %.2fV)，释放继电器切回太阳能蓄电池！", vbat, high_thresh);
+                id(relay_grid_power).turn_off();
+                id(high_volt_count) = 0;
+              }
+            } else {
+              id(high_volt_count) = 0;
+            }
+          }

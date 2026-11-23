@@ -1,0 +1,34 @@
+# 编译产物
+*.asm
+*.ihx
+*.lk
+*.lst
+*.map
+*.mem
+*.rel
+*.rst
+*.sym
+*.o
+
+# 备份文件
+*.bak*
+*_bak
+*_bak_*
+
+# 其他项目（不推）
+6510/
+at4pw-monitor-handoff/
+tower-bms/
+tower-bms-apk/
+tools/
+
+# Python
+__pycache__/
+*.pyc
+
+# 凭据（绝不提交）
+secrets.yaml
+
+# 系统
+.DS_Store
+Thumbs.db
